@@ -1,41 +1,40 @@
 #!/usr/bin/python3
 """
-Task: Change comes from within
-Given a pile of coins of different values,
-determine the fewest number of coins needed to
-meet a given amount total
+Working with dynamic
 """
 
 
 def makeChange(coins, total):
     """
-    Given a pile of coins of different values, determine the fewest
-    number of coins needed to meet a given amount total.
-    Return: fewest number of coins needed to meet total
-        - If total is 0 or less, return 0
-        - If total cannot be met by any number of coins you have, return -1
-        - Coins is a list of the values of the coins in your possession
-        - The value of a coin will always be an integer greater than 0
-        - You can assume you have an infinite number of each denomination of
-        coin in the list
+    Returns the fewest number of coins needed to meet the total amount.
+
+    Args:
+        coins (list): A list of coin values.
+        total (int): The total amount to reach.
+
+    Returns:
+        int: The fewest number of coins needed, or -1 if impossible.
     """
     if total <= 0:
         return 0
 
-    newVal = total + 1
-    store = {0: 0}
+    # Sort coins in descending order
+    coins.sort(reverse=True)
 
+    # Create a table to store the fewest number of coins needed for each amount
+    dp = [float('inf')] * (total + 1)
+    dp[0] = 0  # Base case: 0 coins needed to reach 0 amount
+
+    # Fill up the table
     for i in range(1, total + 1):
-        store[i] = newVal
-
         for coin in coins:
-            current = i - coin
-            if current < 0:
-                continue
+            if coin <= i:
+                dp[i] = min(dp[i], dp[i - coin] + 1)
+            else:
+                break  # No need to check smaller coins
 
-            store[i] = min(store[current] + 1, store[i])
-
-    if store[total] == total + 1:
+    # If the total amount cannot be reached, return -1
+    if dp[total] == float('inf'):
         return -1
-
-    return store[total]
+    else:
+        return dp[total]
